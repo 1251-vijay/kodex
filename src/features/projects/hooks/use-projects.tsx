@@ -35,3 +35,41 @@ export const userCreateProject = () =>{
         }
     )
 }
+
+
+export const useProject = (projectId:Id<'projects'>)=>{
+    return useQuery(api.projects.getById,{id:projectId})
+}
+
+
+export const useRename = (projectId:Id<'projects'>) =>{
+    return useMutation(api.projects.rename).withOptimisticUpdate(
+        (localStorage,args)=>{
+            const existingProject = localStorage.getQuery(api.projects.getById,{id:projectId});
+
+            if (existingProject !==undefined && existingProject !==null){
+              localStorage.setQuery(api.projects.getById,{
+                id:projectId
+              },
+            {...existingProject,name:args.name,
+                updatedAt:Date.now()
+            }
+            );
+
+       
+            }
+                const existingProjects = localStorage.getQuery(api.projects.get);
+
+
+
+                if (existingProjects !==undefined){
+                localStorage.setQuery(api.projects.get,{},existingProjects.map(
+                    (project)=>{
+                        return project._id === args.id?{...project,name:args.name,updatedAt:Date.now()}
+                        : project
+                    }
+                ))
+            }
+        }
+    )
+}
