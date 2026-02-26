@@ -28,7 +28,6 @@ const getProjectIcon = (project:Doc<'projects'>)=>{
 }
 
 
-
 interface ProjectsListProps{
     onViewAll:()=>void;
 }
@@ -65,8 +64,6 @@ const ContinueCard = ({data}:{data:Doc<'projects'>})=>{
 
 }
 
-
-
 const ProjectItem = ({data}:{data:Doc<'projects'>})=>{
     return (
     <Link href={`/projects/${data._id}`} className="text-sm text-foreground/60 font-medium hover:text-foreground py-1 flex items-center justify-between w-full group">
@@ -85,13 +82,7 @@ const ProjectItem = ({data}:{data:Doc<'projects'>})=>{
 }
 
 
-
-
 export const ProjectsList = ({onViewAll}:ProjectsListProps)=>{
-
-
-   
-
     const projects = useProjectsPartial(6);
     if(projects === undefined){
         return <Spinner className="size-4 text-center "/>
