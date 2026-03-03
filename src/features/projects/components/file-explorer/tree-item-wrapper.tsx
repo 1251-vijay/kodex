@@ -33,7 +33,9 @@ export const TreeItemWrapper = (
         return (
             <ContextMenu>
                 <ContextMenuTrigger asChild>
-                    <button onClick={onClick}  onDoubleClick={onDoubleClick} onKeyDown={(e)=>{
+                    <button onClick={onClick}  onDoubleClick={ 
+                        onDoubleClick
+                    } onKeyDown={(e)=>{
                         if(e.key === 'Enter'){
                             e.preventDefault();
                             onRename?.()
