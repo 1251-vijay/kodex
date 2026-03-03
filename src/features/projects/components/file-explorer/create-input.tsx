@@ -24,7 +24,7 @@ export const CreateInput = ({ type, level, onSubmit, onCancel }: CreateInputProp
 
     }
     return (
-        <div className="w-full items-centers gap-1 h-5.5 bg-accent/30"
+        <div className="w-full flex  items-centers gap-1 h-5.5 bg-accent/30"
         style={{paddingLeft: getItemPadding(level,type === 'file')}}
         
         >

@@ -1,8 +1,8 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server"
 import { VerifyAuth } from "./auth"
-import { rename } from "fs";
-import { Id } from "./_generated/dataModel";
+import { Doc, Id } from "./_generated/dataModel";
+import { fi } from "date-fns/locale";
 
 
 export const getFiles = query({
@@ -117,7 +117,7 @@ export const createFile = mutation({
 
         const existing = files.find((file) => file.name === args.name && file.type === 'file')
 
-        if (existing) throw new Error('file alreay exists');
+        if (existing) throw new Error('file already exists');
 
         await ctx.db.insert('files', {
             projectId: args.projectId,
@@ -165,7 +165,7 @@ export const createFolder = mutation({
 
         const existing = folder.find((folder) => folder.name === args.name && folder.type === 'folder')
 
-        if (existing) throw new Error('Folder alreay exists');
+        if (existing) throw new Error('Folder already exists');
 
         await ctx.db.insert('files', {
             projectId: args.projectId,
@@ -214,7 +214,7 @@ export const renameFile = mutation({
 
         if(existing){
             throw new Error(
-                `A ${file.type} with this name alredy exists in this location`
+                `A ${file.type} with this name already exists in this location`
             )
         }
         await ctx.db.patch('files',args.id,{
@@ -327,3 +327,45 @@ const now = Date.now();
     }
 }
 )
+
+
+
+
+export const getFilePath = query({
+    args: {
+       id:v.id('files')
+    },
+    handler: async (ctx, args) => {
+        const identity = await VerifyAuth(ctx);
+
+         const file = await ctx.db.get('files', args.id)
+              if (!file) {
+            throw new Error('File not found')
+        }
+
+        const project = await ctx.db.get('projects', file.projectId)
+
+        if (!project) {
+            throw new Error('project not found')
+        }
+
+        if (project.ownerId !== identity.subject) {
+            throw new Error('unauthorized access to this project')
+        }
+        
+        const path:{_id:string,name:string}[] = [];
+        let currentId : Id<"files"> |undefined = args.id;
+        while (currentId){
+            const file = (await ctx.db.get('files',currentId) ) as | Doc<'files'> | undefined
+                if (!file) break;
+
+            path.unshift({_id: file._id, name : file.name})
+            currentId = file.parentId;
+
+        }
+
+return path;
+   
+
+    },
+})
